@@ -1,5 +1,6 @@
 import logging
 from time import sleep
+from typing import Any
 
 import pytest
 
@@ -11,32 +12,32 @@ pytest.comp_str = ""
 
 
 # pass *kwargs because different the same function is used in multiple deps
-def a(**results_dict):
+def a(**results_dict: Any) -> None:
     sleep(T)
-    pytest.comp_str += "a"
+    pytest.comp_str = str(pytest.comp_str) + "a"
 
 
-def b(**results_dict):
+def b(**results_dict: Any) -> None:
     sleep(T)
-    pytest.comp_str += "b"
+    pytest.comp_str = str(pytest.comp_str) + "b"
 
 
-def c(**results_dict):
+def c(**results_dict: Any) -> None:
     sleep(T)
-    pytest.comp_str += "c"
+    pytest.comp_str = str(pytest.comp_str) + "c"
 
 
-def d(**results_dict):
+def d(**results_dict: Any) -> None:
     sleep(T)
-    pytest.comp_str += "d"
+    pytest.comp_str = str(pytest.comp_str) + "d"
 
 
-def e(**results_dict):
+def e(**results_dict: Any) -> None:
     sleep(T)
-    pytest.comp_str += "e"
+    pytest.comp_str = str(pytest.comp_str) + "e"
 
 
-def test_priority():
+def test_priority() -> None:
     # tests to run 1000s of time
     # Priority test
     for _i in range(100):
@@ -53,7 +54,7 @@ def test_priority():
         assert pytest.comp_str == "abcd", f"during {_i}th iteration"
 
 
-def test_sequentiality():
+def test_sequentiality() -> None:
     for _i in range(100):
         # Sequentiality test
         pytest.comp_str = ""

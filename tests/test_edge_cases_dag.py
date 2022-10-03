@@ -1,19 +1,21 @@
+from typing import Union
+
 from tawazi import op, to_dag
 
 
-def test_same_constant_name_in_two_exec_nodes():
+def test_same_constant_name_in_two_exec_nodes() -> None:
     @op
-    def a(cst: int):
+    def a(cst: int) -> int:
         print(cst)
         return cst
 
     @op
-    def b(a, cst: str):
+    def b(a: Union[str, int], cst: str) -> str:
         print(a, cst)
         return str(a) + cst
 
     @to_dag
-    def my_dag():
+    def my_dag() -> None:
         var_a = a(1234)
         var_b = b(var_a, "poulpe")
 

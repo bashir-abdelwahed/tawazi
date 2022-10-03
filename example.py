@@ -8,27 +8,29 @@ from tawazi import op, to_dag
 
 
 @op
-def a():
+def a() -> str:
     print("ran a")
     return "a"
 
 
 @op
-def b(a):
+def b(a: str) -> str:
     print(f"a is {a}")
     print("ran b")
     return "b"
 
 
 @op
-def c(a):
+def c(a: str) -> str:
     print(f"a is {a}")
     print("ran c")
     return "c"
 
 
 @op
-def d(b, c, third_argument: Union[str, int] = 1234, fourth_argument=6789):
+def d(
+    b: str, c: str, third_argument: Union[str, int] = 1234, fourth_argument: Union[str, int] = 6789
+) -> str:
     print(f"b is {b}")
     print(f"c is {c}")
     print(f"third argument is {third_argument}")
@@ -41,7 +43,7 @@ def d(b, c, third_argument: Union[str, int] = 1234, fourth_argument=6789):
 
 
 @to_dag
-def my_custom_dag():
+def my_custom_dag() -> None:
     vara = a()
     varb = b(vara)
     varc = c(vara)
@@ -49,13 +51,13 @@ def my_custom_dag():
 
 
 @op
-def e():
+def e() -> str:
     print("ran e")
     return "e"
 
 
 @op
-def f(a, b, c, d, e):
+def f(a: str, b: str, c: str, d: str, e: str):
     print(f"a is {a}")
     print(f"b is {b}")
     print(f"c is {c}")
@@ -65,7 +67,7 @@ def f(a, b, c, d, e):
 
 
 @to_dag
-def my_other_custom_dag():
+def my_other_custom_dag() -> None:
     vara = a()
     varb = b(vara)
     varc = c(vara)

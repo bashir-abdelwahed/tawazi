@@ -6,37 +6,37 @@ from tawazi import DAG, ErrorStrategy, ExecNode
 T = 0.1
 
 
-def a():
+def a() -> str:
     sleep(T)
     return "a"
 
 
-def b(a):
+def b(a: str) -> str:
     sleep(T)
     return a + "b"
 
 
-def c(a):
+def c(a: str) -> str:
     sleep(T)
     return a + "c"
 
 
-def d(b, c):
+def d(b: str, c: str) -> str:
     sleep(T)
     return b + c + "d"
 
 
-def e(b):
+def e(b: str) -> str:
     sleep(T)
     return b + "e"
 
 
-def f(e):
+def f(e: str) -> str:
     sleep(T)
     return e + "f"
 
 
-def g(e):
+def g(e: str) -> str:
     sleep(T)
     return e + "g"
 
@@ -53,7 +53,7 @@ list_execnodes = [
 ]
 
 
-def test_dag_build():
+def test_dag_build() -> None:
     g = DAG(list_execnodes, 2, behaviour=ErrorStrategy.strict, logger=logging.getLogger())
     t0 = time()
     g.execute()  # must never fail!

@@ -1,5 +1,6 @@
 import logging
 from time import sleep
+from typing import Any
 
 import pytest
 
@@ -10,21 +11,21 @@ T = 0.001
 pytest.comp_str = ""
 
 
-def a():
+def a() -> None:
     sleep(T)
     pytest.comp_str += "a"
 
 
-def b(a):
+def b(a: Any) -> None:
     raise NotImplementedError
 
 
-def c(b):
+def c(b: Any) -> None:
     sleep(T)
     pytest.comp_str += "c"
 
 
-def d(a):
+def d(a: Any) -> None:
     sleep(T)
     pytest.comp_str += "d"
 
@@ -37,7 +38,7 @@ list_execnodes = [
 ]
 
 
-def test_strict_error_behavior():
+def test_strict_error_behavior() -> None:
     pytest.comp_str = ""
     g = DAG(list_execnodes, 1, behaviour=ErrorStrategy.strict, logger=logging.getLogger())
     try:
@@ -46,14 +47,14 @@ def test_strict_error_behavior():
         pass
 
 
-def test_all_children_behavior():
+def test_all_children_behavior() -> None:
     pytest.comp_str = ""
     g = DAG(list_execnodes, 1, behaviour=ErrorStrategy.all_children, logger=logging.getLogger())
     g.execute()
     assert pytest.comp_str == "ad"
 
 
-def test_permissive_behavior():
+def test_permissive_behavior() -> None:
     pytest.comp_str = ""
     g = DAG(list_execnodes, 1, behaviour=ErrorStrategy.permissive, logger=logging.getLogger())
     g.execute()
