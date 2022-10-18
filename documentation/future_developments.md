@@ -21,6 +21,7 @@ in an object and then decide the dependencies using that.
   * return all the results of the execution of all returned `ExecNodes`.
   * also return all the results just like it is being done at the moment.
 * automatically generate release on new tag https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes#configuring-automatically-generated-release-notes
+*
 
 ### Features to be discussed
 * support multiprocessing.
