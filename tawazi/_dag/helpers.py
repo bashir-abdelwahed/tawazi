@@ -258,7 +258,7 @@ def _execute(
         num_running_processes = get_num_running_processes(futures)
         if xn.is_sequential and (num_running_threads != 0 or num_running_processes != 0):
             logger.debug(
-                "%s must not run in parallel. Wait for the end of a node in %s", {xn.id}, running 
+                "%s must not run in parallel. Wait for the end of a node in %s", {xn.id}, running
             )
             done_, running = wait_ex(running, return_when=FIRST_COMPLETED)
             # go to step 6
