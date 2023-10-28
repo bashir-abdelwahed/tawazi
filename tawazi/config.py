@@ -34,7 +34,7 @@ class Config(BaseSettings):
 
     # choose wether to use DILL or pickle for serializing ExecNodes
     #  This should be set to True if user wants to use Resource=Process!
-    TAWAZI_DILL_NODES = False
+    TAWAZI_DILL_NODES = True
 
     # Logger settings
     LOGURU_LEVEL: str = Field(default="PROD", env="TAWAZI_LOGGER_LEVEL")
