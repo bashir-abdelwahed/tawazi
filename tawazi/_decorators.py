@@ -9,6 +9,7 @@ from tawazi._dag import DAG
 from tawazi._helpers import get_args_and_default_args
 from tawazi.errors import ErrorStrategy
 
+from ._helpers import _set_max_threads_concurrency
 from .config import cfg
 from .consts import RVDAG, RVXN, P, Resource, TagOrTags
 from .node import (
@@ -129,6 +130,8 @@ def dag(
     declare_dag_function: Callable[P, RVDAG],
     *,
     max_concurrency: int = 1,
+    max_threads_concurrency: int = 1,
+    max_processes_concurrency: int = 1,
     behavior: ErrorStrategy = ErrorStrategy.strict,
 ) -> DAG[P, RVDAG]:
     ...
@@ -136,7 +139,11 @@ def dag(
 
 @overload
 def dag(
-    *, max_concurrency: int = 1, behavior: ErrorStrategy = ErrorStrategy.strict
+    *,
+    max_concurrency: int = 1,
+    max_threads_concurrency: int = 1,
+    max_processes_concurrency: int = 1,
+    behavior: ErrorStrategy = ErrorStrategy.strict,
 ) -> Callable[[Callable[P, RVDAG]], DAG[P, RVDAG]]:
     ...
 
@@ -145,6 +152,8 @@ def dag(
     declare_dag_function: Optional[Callable[P, RVDAG]] = None,
     *,
     max_concurrency: int = 1,
+    max_threads_concurrency: int = 1,
+    max_processes_concurrency: int = 1,
     behavior: ErrorStrategy = ErrorStrategy.strict,
 ) -> Union[Callable[[Callable[P, RVDAG]], DAG[P, RVDAG]], DAG[P, RVDAG]]:
     """Transform the declared `ExecNode`s into a DAG that can be executed by Tawazi's scheduler.
@@ -161,7 +170,9 @@ def dag(
             (i.e. You can not use a normal Python function inside it unless decorated with `@xn`.)
             However, you can use some simple python code to generate constants.
             These constants are computed only once during the `DAG` declaration.
-        max_concurrency: the maximum number of concurrent threads to execute in parallel.
+        max_concurrency: same as max_threads_concurrency. Deprecated. Will be removed in 0.5.
+        max_threads_concurrency: the maximum number of concurrent threads to execute in parallel.
+        max_processes_concurrency: the maximum number of concurrent processes to execute in parallel. (Experimental)
         behavior: the behavior of the `DAG` when an error occurs during the execution of a function (`ExecNode`).
 
     Returns:
@@ -170,6 +181,7 @@ def dag(
     Raises:
         TypeError: If the decorated object is not a Callable.
     """
+    max_threads_concurrency = _set_max_threads_concurrency(max_concurrency, max_threads_concurrency)
 
     # wrapper used to support parametrized and non parametrized decorators
     def intermediate_wrapper(_func: Callable[P, RVDAG]) -> DAG[P, RVDAG]:
@@ -211,7 +223,8 @@ def dag(
                     node.exec_nodes,
                     input_uxns=uxn_args,
                     return_uxns=returned_usage_exec_nodes,
-                    max_concurrency=max_concurrency,
+                    max_threads_concurrency=max_threads_concurrency,
+                    max_processes_concurrency=max_processes_concurrency,
                     behavior=behavior,
                 )
 

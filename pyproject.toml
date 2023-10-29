@@ -20,7 +20,8 @@ dependencies = [
     "pydantic~=1.0",
     "loguru",
     "PyYaml>=6",
-    "typing_extensions>=3.10"
+    "typing_extensions>=3.10",
+    "dill"
 ]
 
 [project.optional-dependencies]
@@ -57,7 +58,7 @@ strict_equality = true
 # --strict end
 
 [[tool.mypy.overrides]]
-module = "matplotlib.*,networkx.*,yaml.*"
+module = "matplotlib.*,networkx.*,yaml.*,dill.*"
 ignore_missing_imports = true
 
 [tool.black]

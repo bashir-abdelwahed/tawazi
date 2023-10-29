@@ -1,5 +1,6 @@
 """Module describing ExecNode Class and subclasses (The basic building Block of a DAG."""
 import functools
+import pickle
 import warnings
 from copy import copy, deepcopy
 from dataclasses import dataclass, field
@@ -8,6 +9,7 @@ from threading import Lock
 from types import MethodType
 from typing import Any, Callable, Dict, Generic, List, NoReturn, Optional, Tuple, Union
 
+import dill
 from loguru import logger
 
 from tawazi._helpers import _filter_noval, _lazy_xn_id, _make_raise_arg_error, ordinal
@@ -41,6 +43,11 @@ exec_nodes: Dict[Identifier, "ExecNode"] = {}
 exec_nodes_lock = Lock()
 
 Alias = Union[Tag, Identifier, "ExecNode"]  # multiple ways of identifying an XN
+
+dill.settings["protocol"] = pickle.HIGHEST_PROTOCOL
+dill.settings["fmode"] = dill.HANDLE_FMODE
+dill.settings["byref"] = True
+dill.settings["recurse"] = False
 
 
 def count_occurences(id_: str, exec_nodes: Dict[str, "ExecNode"]) -> int:
@@ -82,6 +89,8 @@ class ExecNode:
         Please use `@xn` decorator.
     """
 
+    DILLED_ATTRIBUTES = ["exec_function", "__wrapped__"]
+
     def __init__(
         self,
         id_: Identifier,
@@ -95,7 +104,7 @@ class ExecNode:
         setup: bool = False,
         unpack_to: Optional[int] = None,
         resource: Resource = cfg.TAWAZI_DEFAULT_RESOURCE,
-    ):
+    ) -> None:
         """Constructor of ExecNode.
 
         Args:
@@ -147,6 +156,31 @@ class ExecNode:
         # even though setting result to NoVal is not necessary... it clarifies debugging
 
         self.profile = Profile(cfg.TAWAZI_PROFILE_ALL_NODES)
+
+    def __getstate__(self) -> object:
+        """Make this ExecNode pickelable (for multiprocessing purpose) by using dill to pickle some attributes."""
+        state = self.__dict__.copy()
+        # only use dill if the ExecNode is a process
+        if not cfg.TAWAZI_DILL_NODES and self.resource != Resource.process:
+            return state
+
+        for k in ExecNode.DILLED_ATTRIBUTES:
+            if k in state:
+                state[k] = dill.dumps(state[k])  # noqa: S301
+        return state
+
+    def __setstate__(self, state: Dict[str, Any]) -> None:
+        """Make this ExecNode pickelable (for multiprocessing purpose) by using dill to pickle some attributes."""
+        self.__dict__.update(state)
+        # only usedill if the ExecNode is a process
+        if not cfg.TAWAZI_DILL_NODES and self.resource != Resource.process:
+            return
+
+        for k in ExecNode.DILLED_ATTRIBUTES:
+            if k in state:
+                # protocol=pickle.HIGHEST_PROTOCOL, fmode=dill.HANDLE_FMODE, byref=True, recurse=False
+                state[k] = dill.loads(state[k])  # noqa: S301
+                self.__dict__[k] = state[k]
 
     @property
     def executed(self) -> bool:
