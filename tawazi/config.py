@@ -33,7 +33,7 @@ class Config(BaseSettings):
     TAWAZI_DEFAULT_RESOURCE = Resource.thread
 
     # choose wether to use DILL or pickle for serializing ExecNodes
-    #  This should be set to True if user wants to use Resource=Process!
+    #  This should be set to True if user wants to always use Dill instead of pickle
     TAWAZI_DILL_NODES = False
 
     # Logger settings

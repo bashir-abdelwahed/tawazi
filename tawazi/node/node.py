@@ -253,16 +253,6 @@ class ExecNode:
         if not isinstance(value, Resource):
             raise ValueError(f"resource must be of type {Resource}, provided {type(value)}")
 
-        if value == Resource.process and not cfg.TAWAZI_DILL_NODES:
-            warnings.warn(
-                "You are trying to run a Node in a process, but TAWAZI_DILL_NODES is set to False. "
-                "This means that the Node will be pickled using pickle instead of dill, "
-                "which might cause some issues. "
-                "You can set the env var TAWAZI_DILL_NODES to True to use dill instead of pickle.",
-                UserWarning,
-                stacklevel=2,
-            )
-
         self._resource = value
 
     @property
