@@ -198,10 +198,16 @@ def test_all_children_behavior_process() -> None:
         g_ = deepcopy(g_process)
         g_.behavior = ErrorStrategy.all_children
         a, b, c, d = g_()
-        assert a == "a"
-        assert b is None
-        assert c is None
-        assert d == "ad"
+        # raise assertion error when dill is used instead of assert ... == ...
+        #  because dill and pytest don't play well together
+        if a != "a":
+            raise AssertionError
+        if b is not None:
+            raise AssertionError
+        if c is not None:
+            raise AssertionError
+        if d != "ad":
+            raise AssertionError
 
 
 def test_permissive_behavior_process() -> None:
@@ -212,10 +218,14 @@ def test_permissive_behavior_process() -> None:
         g_ = deepcopy(g_process)
         g_.behavior = ErrorStrategy.permissive
         a, b, c, d = g_()
-        assert a == "a"
-        assert b is None
-        assert c == "c"
-        assert d == "ad"
+        if a != "a":
+            raise AssertionError
+        if b is not None:
+            raise AssertionError
+        if c != "c":
+            raise AssertionError
+        if d != "ad":
+            raise AssertionError
 
 
 # todo test using argname for ExecNode

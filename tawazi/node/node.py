@@ -160,6 +160,7 @@ class ExecNode:
     def __getstate__(self) -> object:
         """Make this ExecNode pickelable (for multiprocessing purpose) by using dill to pickle some attributes."""
         state = self.__dict__.copy()
+        # only use dill if the ExecNode is a process
         if not cfg.TAWAZI_DILL_NODES and self.resource != Resource.process:
             return state
 
@@ -171,6 +172,7 @@ class ExecNode:
     def __setstate__(self, state: Dict[str, Any]) -> None:
         """Make this ExecNode pickelable (for multiprocessing purpose) by using dill to pickle some attributes."""
         self.__dict__.update(state)
+        # only usedill if the ExecNode is a process
         if not cfg.TAWAZI_DILL_NODES and self.resource != Resource.process:
             return
 
